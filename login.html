@@ -57,8 +57,9 @@
         update(ref(database,'users/'+user.uid),{
             last_login:dt
         });
-        alert('Log in successful')
+        // alert('Log in successful')
         // ...
+        window.location.href = 'check.html?userId=' + user.uid;
     })
     .catch((error) => {
         const errorCode = error.code;

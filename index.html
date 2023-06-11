@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps API - Select Coordinates</title>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Google Maps API - Select Coordinates</h1>
+    <div id="map"></div>
+    <input type="submit" id="select" name="select_submit" value="Select" />
+    <script type="module">
+        // 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase,set,ref,update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        // 
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0Xi3KJPeybFrKhipvVC1soYEuQpm6yjk",
+            authDomain: "rjtcs-3ae8a.firebaseapp.com",
+            databaseURL: "https://rjtcs-3ae8a-default-rtdb.firebaseio.com",
+            projectId: "rjtcs-3ae8a",
+            storageBucket: "rjtcs-3ae8a.appspot.com",
+            messagingSenderId: "262200925903",
+            appId: "1:262200925903:web:9921d16c945c031d3d21ba"
+        };
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+        //
+        select.addEventListener('click',(e)=>{
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            console.log(userId); 
+            console.log("Marker 1 pos:"+marker1Position.lat()+"  "+marker2Position.lng())
+            update(ref(database,'users/'+userId),{
+            position1_lat:Math.round(marker1Position.lat()),
+            position1_lng:Math.round(marker1Position.lng()),
+            position2_lat:Math.round(marker2Position.lat()),
+            position2_lng:Math.round(marker2Position.lng())
+            });
+        });
+        </script>
+    <script>
+      var map;
+      var marker1;
+      var marker2;
+      var marker1Position;
+      var marker2Position;
+
+      function initMap() {
+        // Initialize the map
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 0, lng: 0 },
+          zoom: 2
+        });
+
+        // Add click event listener to the map
+        map.addListener('click', function(event) {
+          if (!marker1) {
+            // Create marker 1
+            marker1 = new google.maps.Marker({
+              position: event.latLng,
+              map: map,
+              title: 'Marker 1'
+            });
+
+            // Store marker 1 position
+            marker1Position = event.latLng;
+          } else if (!marker2) {
+            // Create marker 2
+            marker2 = new google.maps.Marker({
+              position: event.latLng,
+              map: map,
+              title: 'Marker 2'
+            });
+
+            // Store marker 2 position
+            marker2Position = event.latLng;
+          } else {
+            // Both markers are already set, remove them and start over
+            marker1.setMap(null);
+            marker2.setMap(null);
+            marker1 = null;
+            marker2 = null;
+
+            // Create marker 1 again
+            marker1 = new google.maps.Marker({
+              position: event.latLng,
+              map: map,
+              title: 'Marker 1'
+            });
+
+            // Store marker 1 position
+            marker1Position = event.latLng;
+          }
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOzH8kaT9gHR5gXCscjOFT2rXTjreYul4&callback=initMap" async defer></script>
+  </body>
+</html>
